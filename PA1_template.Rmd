@@ -1,17 +1,49 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
+title: 'Reproducible Research: Peer Assessment 1'
+output:
   html_document:
-    keep_md: true
+    keep_md: yes
 ---
-
+```{r global_options, echo=F}
+library(knitr)
+opts_chunk$set(cache=T, message=F, warning=F, error=T)
+```
 
 ## Loading and preprocessing the data
-
+First let's read the zipped data:
+``` {r read_data}
+data <- read.csv(unzip("activity.zip"), 
+                 na.strings = "NA", 
+                 colClasses = c("integer", "Date", "integer")
+                 )
+```
+Let's see what we've got:
+``` {r data_summary}
+summary(data)
+head(data)
+```
 
 
 ## What is mean total number of steps taken per day?
+We begin by grouping the data by day and finding the total steps per day:
+``` {r daily_steps}
+library(dplyr)
+by_day <- group_by(data, date)
+daily_steps <- summarize(by_day, total_steps = sum(steps, na.rm=T))
+```
 
+Now we can see the distribution of the daily total steps:
+``` {r histogram}
+hist(daily_steps$total_steps, 
+     breaks=20,
+     xlab="mean daily steps", main=""
+     )
+```
+
+To get a better sense of the data we can also compute the: 
+
+* mean: **`r mean(daily_steps$total_steps)`** with ` mean(daily_steps$total_steps)`  
+* median: **`r median(daily_steps$total_steps)`** with ` median(daily_steps$total_steps)`
 
 
 ## What is the average daily activity pattern?
