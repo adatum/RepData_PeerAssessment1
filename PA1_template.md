@@ -69,7 +69,41 @@ To get a better sense of the data we can also compute the:
 
 
 ## What is the average daily activity pattern?
+Similarly, we can see the average number of steps grouped by the 5-minute time interval of a day, over all the days in our data set:
 
+
+```r
+by_interval <- group_by(data, interval)
+interval_steps <- summarize(by_interval, avg_steps = mean(steps, na.rm=T))
+```
+
+Plotting this, we have:
+
+```r
+library(lattice)
+xyplot(interval_steps$avg_steps ~ interval_steps$interval, 
+       data=interval_steps, 
+       type="l",
+       xlab="5-minute interval of day",
+       ylab="average number of steps"
+       )
+```
+
+![](PA1_template_files/figure-html/interval_plot-1.png) 
+  
+It might be interesting to know which interval has the highest average number of steps. We can find this easily:
+
+```r
+max_interval <- interval_steps[which.max(interval_steps$avg_steps), "interval"]
+max_interval
+```
+
+```
+## Source: local data frame [1 x 1]
+## 
+##   interval
+## 1      835
+```
 
 
 ## Imputing missing values
