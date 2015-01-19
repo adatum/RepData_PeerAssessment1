@@ -114,8 +114,32 @@ Now we might wish to see the impact these missing values have. Let's replace `NA
 
 
 ```r
-fdata <- data # temporary
+fdata <- left_join(data, interval_steps) 
+fdata$steps <- ifelse(is.na(fdata$steps), fdata$avg_steps, fdata$steps)
 ```
+
+As before, we'll plot a histogram of the total steps taken:
+
+
+```r
+f_daily_steps <- summarize(group_by(fdata, date),
+                           total_steps = sum(steps)
+                           )
+
+hist(f_daily_steps$total_steps, 
+     breaks=20,
+     xlab="mean daily steps", main=""
+     )
+```
+
+![plot of chunk filled_hist](figure/filled_hist-1.png) 
+
+As we might have expected, the height of the first bin has become much smaller compared to the original histogram, and the shape looks more normally distributed. 
+
+We can verify that mean and median are higher now:
+
+* mean: **1.0766189 &times; 10<sup>4</sup>** with ` mean(f_daily_steps$total_steps)`  
+* median: **1.0766189 &times; 10<sup>4</sup>** with ` median(f_daily_steps$total_steps)`
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
