@@ -1,4 +1,9 @@
-# Reproducible Research: Peer Assessment 1
+---
+title: 'Reproducible Research: Peer Assessment 1'
+output:
+  html_document:
+    keep_md: yes
+---
 
 
 ## Loading and preprocessing the data
@@ -60,7 +65,7 @@ hist(daily_steps$total_steps,
      )
 ```
 
-![](PA1_template_files/figure-html/histogram-1.png) 
+![plot of chunk histogram](figure/histogram-1.png) 
 
 To get a better sense of the data we can also compute the: 
 
@@ -89,25 +94,59 @@ xyplot(interval_steps$avg_steps ~ interval_steps$interval,
        )
 ```
 
-![](PA1_template_files/figure-html/interval_plot-1.png) 
+![plot of chunk interval_plot](figure/interval_plot-1.png) 
   
 It might be interesting to know which interval has the highest average number of steps. We can find this easily:
 
 ```r
-max_interval <- interval_steps[which.max(interval_steps$avg_steps), "interval"]
-max_interval
+interval_steps[[which.max(interval_steps$avg_steps), "interval"]]
 ```
 
 ```
-## Source: local data frame [1 x 1]
-## 
-##   interval
-## 1      835
+## [1] 835
 ```
 
 
 ## Imputing missing values
+Earlier we saw that there are **2304** missing, or `NA`, values. This can be calculated using `sum(is.na(data))`.  
 
+Now we might wish to see the impact these missing values have. Let's replace `NA`s with the average (mean) number of steps for that interval.  
+
+
+```r
+fdata <- data # temporary
+```
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+To compare activity levels between weekdays and weekends, we'll create a column of factor variables identifying the time of the week.
+
+```r
+fdata$tow <- as.factor(ifelse(weekdays(fdata$date) %in% c("Saturday", "Sunday"), "weekend", "weekday"))
+```
+
+Now, we can compute the average number of steps per interval as before, but this time we'll do it separately for weekdays and weekends.
+
+
+```r
+tow_steps <- summarize(group_by(fdata, interval, tow),
+                       avg_steps = mean(steps, na.rm=T)
+                       )
+```
+
+Finally, let's plot the results to compare weekday and weekend activity:
+
+
+```r
+xyplot(avg_steps ~ interval | tow,
+       data=tow_steps, 
+       type="l",
+       xlab="5-minute interval of day",
+       ylab="average number of steps",
+       layout=c(1,2)
+       )
+```
+
+![plot of chunk comp_plot](figure/comp_plot-1.png) 
+
+
