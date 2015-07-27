@@ -7,6 +7,7 @@ output:
 ```{r global_options, include=F}
 library(knitr)
 opts_chunk$set(cache=F, message=F, warning=F, error=T)
+options(scipen = 2, digits = 2)
 ```
 
 ## Loading and preprocessing the data
@@ -29,21 +30,26 @@ We begin by grouping the data by day and finding the total steps per day:
 ``` {r daily_steps}
 library(dplyr)
 by_day <- group_by(data, date)
-daily_steps <- summarize(by_day, total_steps = sum(steps, na.rm=T))
+daily_steps <- summarize(by_day, total_steps = sum(steps))
 ```
 
 Now we can see the distribution of the daily total steps:
 ``` {r histogram}
 hist(daily_steps$total_steps, 
      breaks=20,
-     xlab="mean daily steps", main=""
+     xlab="mean daily steps", 
+     main="",
+     col="skyblue"
      )
+
+abline(v = mean(daily_steps$total_steps, na.rm = T), col = "red")
 ```
 
 To get a better sense of the data we can also compute the: 
 
-* mean: **`r mean(daily_steps$total_steps)`** with ` mean(daily_steps$total_steps)`  
-* median: **`r median(daily_steps$total_steps)`** with ` median(daily_steps$total_steps)`
+* mean: **`r mean(daily_steps$total_steps, na.rm = T)`** with ` mean(daily_steps$total_steps, na.rm = T)` 
+
+* median: **`r median(daily_steps$total_steps, na.rm = T)`** with ` median(daily_steps$total_steps, na.rm = T)`
 
 
 ## What is the average daily activity pattern?
@@ -90,13 +96,15 @@ f_daily_steps <- summarize(group_by(fdata, date),
 
 hist(f_daily_steps$total_steps, 
      breaks=20,
-     xlab="mean daily steps", main=""
+     xlab="mean daily steps", 
+     main="",
+     col="skyblue"
      )
+
+abline(v = mean(f_daily_steps$total_steps, na.rm = T), col = "red")
 ```
 
-As we might have expected, the height of the first bin has become much smaller compared to the original histogram, and the shape looks more normally distributed. 
-
-We can verify that mean and median are higher now:
+As we might have expected, the counts have increased compared to the original histogram, since the `NA`s, which were previously not included, have now been assigned average values. The mean and median are now identical, suggesting the data are no longer skewed.
 
 * mean: **`r mean(f_daily_steps$total_steps)`** with ` mean(f_daily_steps$total_steps)`  
 * median: **`r median(f_daily_steps$total_steps)`** with ` median(f_daily_steps$total_steps)`

@@ -1,9 +1,4 @@
----
-title: 'Reproducible Research: Peer Assessment 1'
-output:
-  html_document:
-    keep_md: yes
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
@@ -22,13 +17,13 @@ summary(data)
 ```
 
 ```
-##      steps             date               interval     
-##  Min.   :  0.00   Min.   :2012-10-01   Min.   :   0.0  
-##  1st Qu.:  0.00   1st Qu.:2012-10-16   1st Qu.: 588.8  
-##  Median :  0.00   Median :2012-10-31   Median :1177.5  
-##  Mean   : 37.38   Mean   :2012-10-31   Mean   :1177.5  
-##  3rd Qu.: 12.00   3rd Qu.:2012-11-15   3rd Qu.:1766.2  
-##  Max.   :806.00   Max.   :2012-11-30   Max.   :2355.0  
+##      steps           date               interval   
+##  Min.   :  0    Min.   :2012-10-01   Min.   :   0  
+##  1st Qu.:  0    1st Qu.:2012-10-16   1st Qu.: 589  
+##  Median :  0    Median :2012-10-31   Median :1178  
+##  Mean   : 37    Mean   :2012-10-31   Mean   :1178  
+##  3rd Qu.: 12    3rd Qu.:2012-11-15   3rd Qu.:1766  
+##  Max.   :806    Max.   :2012-11-30   Max.   :2355  
 ##  NA's   :2304
 ```
 
@@ -53,7 +48,7 @@ We begin by grouping the data by day and finding the total steps per day:
 ```r
 library(dplyr)
 by_day <- group_by(data, date)
-daily_steps <- summarize(by_day, total_steps = sum(steps, na.rm=T))
+daily_steps <- summarize(by_day, total_steps = sum(steps))
 ```
 
 Now we can see the distribution of the daily total steps:
@@ -61,16 +56,21 @@ Now we can see the distribution of the daily total steps:
 ```r
 hist(daily_steps$total_steps, 
      breaks=20,
-     xlab="mean daily steps", main=""
+     xlab="mean daily steps", 
+     main="",
+     col="skyblue"
      )
+
+abline(v = mean(daily_steps$total_steps, na.rm = T), col = "red")
 ```
 
-![plot of chunk histogram](figure/histogram-1.png) 
+![](PA1_template_files/figure-html/histogram-1.png) 
 
 To get a better sense of the data we can also compute the: 
 
-* mean: **9354.2295082** with ` mean(daily_steps$total_steps)`  
-* median: **10395** with ` median(daily_steps$total_steps)`
+* mean: **10766.19** with ` mean(daily_steps$total_steps, na.rm = T)` 
+
+* median: **10765** with ` median(daily_steps$total_steps, na.rm = T)`
 
 
 ## What is the average daily activity pattern?
@@ -94,7 +94,7 @@ xyplot(interval_steps$avg_steps ~ interval_steps$interval,
        )
 ```
 
-![plot of chunk interval_plot](figure/interval_plot-1.png) 
+![](PA1_template_files/figure-html/interval_plot-1.png) 
   
 It might be interesting to know which interval has the highest average number of steps. We can find this easily:
 
@@ -128,18 +128,20 @@ f_daily_steps <- summarize(group_by(fdata, date),
 
 hist(f_daily_steps$total_steps, 
      breaks=20,
-     xlab="mean daily steps", main=""
+     xlab="mean daily steps", 
+     main="",
+     col="skyblue"
      )
+
+abline(v = mean(f_daily_steps$total_steps, na.rm = T), col = "red")
 ```
 
-![plot of chunk filled_hist](figure/filled_hist-1.png) 
+![](PA1_template_files/figure-html/filled_hist-1.png) 
 
-As we might have expected, the height of the first bin has become much smaller compared to the original histogram, and the shape looks more normally distributed. 
+As we might have expected, the counts have increased compared to the original histogram, since the `NA`s, which were previously not included, have now been assigned average values. The mean and median are now identical, suggesting the data are no longer skewed.
 
-We can verify that mean and median are higher now:
-
-* mean: **1.0766189 &times; 10<sup>4</sup>** with ` mean(f_daily_steps$total_steps)`  
-* median: **1.0766189 &times; 10<sup>4</sup>** with ` median(f_daily_steps$total_steps)`
+* mean: **10766.19** with ` mean(f_daily_steps$total_steps)`  
+* median: **10766.19** with ` median(f_daily_steps$total_steps)`
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
@@ -171,6 +173,6 @@ xyplot(avg_steps ~ interval | tow,
        )
 ```
 
-![plot of chunk comp_plot](figure/comp_plot-1.png) 
+![](PA1_template_files/figure-html/comp_plot-1.png) 
 
 
